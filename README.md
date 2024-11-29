@@ -19,7 +19,7 @@ This project benchmarks a simple webserver implemented in multiple languages, me
      - `/sha256`: Calculates the SHA-256 hash of the input.
      - `/base64`: Encodes the input in Base64.
      - `/urlencode`: URL-encodes the input string.
-   - Random strings are used as input for each request.
+   - Random 64 character strings are used as input for each request.
 5. **Performance Measurement**:
    - The overall average time across batches is recorded.
    - An ascii bar chart is displayed
@@ -40,7 +40,7 @@ This project benchmarks a simple webserver implemented in multiple languages, me
 ### Steps
 1. Clone the repository and navigate to the root directory:
    ```bash
-   git clone https://github.com/your-repo.git
+   git clone https://github.com/NilsSlui/languages-webserver.git
    cd your-repo
 
    2. Run the benchmark script:
