@@ -31,6 +31,12 @@ This project benchmarks a simple webserver implemented in multiple languages, me
 - **PHP**: Version 7.4 or higher
 - **Python**: Version 3.6 or higher
 
+## If the installation of dependencies fails, you can manually install the dependencies for each language
+- **Python**: Flask
+  ```bash
+  pip install Flask
+  ```
+
 ### Steps
 1. Clone the repository and navigate to the root directory:
    ```bash
