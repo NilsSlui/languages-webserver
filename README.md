@@ -41,7 +41,8 @@ This project benchmarks a simple webserver implemented in multiple languages, me
 1. Clone the repository and navigate to the root directory:
    ```bash
    git clone https://github.com/NilsSlui/languages-webserver.git
-   cd your-repo
+   cd languages-webserver
+   ```
 
    2. Run the benchmark script:
    ```bash 
