@@ -60,7 +60,7 @@ func installDependencies(server Server) {
 			cmd.Stderr = io.Discard
 			err := cmd.Run()
 			if err != nil {
-				//fmt.Println("Error installing dependencies")
+				fmt.Println("Error installing dependencies")
 			}
 		}
 	}
