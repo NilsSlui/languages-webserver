@@ -5,12 +5,12 @@ This project benchmarks a simple webserver implemented in multiple languages. Th
 ## How It Works
 
 ### Supported Languages
-- **PHP**
-- **Go**
-- **Python**
-- **Node.js**
-- **Ruby**
-- **Rust**
+- **Go**: Version 1.18 or higher
+- **PHP**: Version 7.4 or higher
+- **Python**: Version 3.6or higher 
+- **Node.js**: Version 22 or higher
+- **Ruby**: Version 2.6 or higher
+- **Rust**: 2021 
 
 ### Benchmark Workflow
 1. **Setup**: The script (attempts to) install dependencies for each language 
@@ -28,15 +28,7 @@ This project benchmarks a simple webserver implemented in multiple languages. Th
 
 ## Running the Benchmark
 
-### Prerequisites
-- **Go**: Version 1.18 or higher
-- **PHP**: Version 7.4 or higher
-- **Python**: Version 3.6or higher 
-- **Node.js**: Version 22 or higher
-- **Ruby**: Version 2.6 or higher
-- **Rust**: 2021 
-
-## If the installation of dependencies fails, you can manually install the dependencies for each language
+### If the installation of dependencies fails, you can manually install the dependencies for each language
 - **Python**: Flask
   ```bash
   pip install Flask
