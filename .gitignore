@@ -3,3 +3,6 @@
 .vscode/
 !webservers/**/webserver.*
 *.
+node_modules/
+*.
+go.mod

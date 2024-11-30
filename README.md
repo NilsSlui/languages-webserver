@@ -29,7 +29,8 @@ This project benchmarks a simple webserver implemented in multiple languages, me
 ### Prerequisites
 - **Go**: Version 1.18 or higher
 - **PHP**: Version 7.4 or higher
-- **Python**: Version 3.6 or higher
+- **Python**: Version 3.6or higher 
+- **Node.js**: Version 22 or higher
 
 ## If the installation of dependencies fails, you can manually install the dependencies for each language
 - **Python**: Flask
@@ -44,7 +45,7 @@ This project benchmarks a simple webserver implemented in multiple languages, me
    cd languages-webserver
    ```
 
-   2. Run the benchmark script:
+2. Run the benchmark script:
    ```bash 
    go run benchmark.go
    ```

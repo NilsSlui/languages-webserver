@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"os"
 	"os/exec"
 	"sort"
 	"strings"
@@ -35,16 +36,24 @@ var SERVERS = map[string]Server{
 		Cwd: "",
 	},
 	"go": {
-		Command: []string{"./webserver"}, // Run the compiled binary
 		DependenciesCommand: [][]string{
 			{"go", "mod", "init", "webserver"},
-			{"go", "build", "-o", "webserver", "webserver.go"}, // Build the binary
+			{"go", "build", "-o", "webserver", "webserver.go"},
 		},
-		Cwd: "webservers/go",
+		Command: []string{"./webserver"},
+		Cwd:     "webservers/go",
 	},
 	"python": {
 		Command: []string{"python3", "webserver.py"},
 		Cwd:     "webservers/python",
+	},
+	"node": {
+		DependenciesCommand: [][]string{
+			{"npm", "init", "-y"}, // Initialize package.json
+			{"npm", "install"},    // Install dependencies
+		},
+		Command: []string{"node", "webserver.js"}, // Start the Node.js server
+		Cwd:     "webservers/node",                // Directory containing the Node.js files
 	},
 }
 
@@ -56,8 +65,8 @@ func installDependencies(server Server) {
 			if cwd != "" {
 				cmd.Dir = cwd
 			}
-			cmd.Stdout = io.Discard
-			cmd.Stderr = io.Discard
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
 			err := cmd.Run()
 			if err != nil {
 				fmt.Println("Error installing dependencies")
@@ -75,6 +84,7 @@ func startServer(server Server) *exec.Cmd {
 	err := cmd.Start()
 	if err != nil {
 		fmt.Printf("Error starting server: %v\n", err)
+		return nil
 	}
 	time.Sleep(2 * time.Second)
 	return cmd
