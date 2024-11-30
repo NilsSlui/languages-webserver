@@ -1,6 +1,6 @@
+// server.js
 const http = require('http');
 const url = require('url');
-const querystring = require('querystring');
 const crypto = require('crypto');
 
 const server = http.createServer((req, res) => {
@@ -10,51 +10,46 @@ const server = http.createServer((req, res) => {
 
     if (method === 'POST') {
         let body = '';
+
         req.on('data', chunk => {
             body += chunk;
         });
+
         req.on('end', () => {
             try {
-                const parsedBody = querystring.parse(body);
-                const input = parsedBody['input'];
+                // Assume content-type is application/x-www-form-urlencoded
+                const input = new URLSearchParams(body).get('input');
 
                 if (!input) {
-                    throw new Error('Input is required');
+                    res.statusCode = 400;
+                    res.end('Input is required');
+                    return;
                 }
 
-                switch (uri) {
-                    case '/sha256':
-                        const hash = crypto.createHash('sha256').update(input).digest('hex');
-                        res.statusCode = 200;
-                        res.end(hash);
-                        break;
-                    case '/base64':
-                        const base64 = Buffer.from(input).toString('base64');
-                        res.statusCode = 200;
-                        res.end(base64);
-                        break;
-                    case '/urlencode':
-                        const urlencode = encodeURIComponent(input);
-                        res.statusCode = 200;
-                        res.end(urlencode);
-                        break;
-                    default:
-                        res.statusCode = 404;
-                        res.end('Not Found');
+                res.statusCode = 200;
+
+                if (uri === '/sha256') {
+                    const hash = crypto.createHash('sha256').update(input).digest('hex');
+                    res.end(hash);
+                } else if (uri === '/base64') {
+                    const base64 = Buffer.from(input).toString('base64');
+                    res.end(base64);
+                } else if (uri === '/urlencode') {
+                    const urlencode = encodeURIComponent(input);
+                    res.end(urlencode);
+                } else {
+                    res.statusCode = 404;
+                    res.end('Not Found');
                 }
             } catch (err) {
                 res.statusCode = 500;
-                res.end(err.message || 'Internal Server Error');
+                res.end('Internal Server Error');
+                console.error(err);
             }
         });
     } else if (method === 'GET') {
-        try {
-            res.statusCode = 201;
-            res.end('php');
-        } catch (err) {
-            res.statusCode = 500;
-            res.end(err.message || 'Internal Server Error');
-        }
+        res.statusCode = 201;
+        res.end('node');
     } else {
         res.statusCode = 405;
         res.end('Method Not Allowed');

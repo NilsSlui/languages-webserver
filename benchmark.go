@@ -57,7 +57,7 @@ var SERVERS = map[string]Server{
 		Command: []string{"./webserver"},
 	},
 	"python": {
-		Command: []string{"python3", "webserver.py"},
+		Command: []string{"gunicorn", "-w", "4", "-b", "0.0.0.0:8008", "webserver:app"},
 	},
 }
 
