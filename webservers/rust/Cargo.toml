@@ -1,4 +1,0 @@
-[dependencies]
-sha2 = "0.10"          # For SHA-256 hashing
-base64 = "0.21"        # For Base64 encoding
-urlencoding = "2.1"    # For URL encoding

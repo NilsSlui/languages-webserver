@@ -66,7 +66,7 @@ func installDependencies(key string, server Server) {
 		for _, command := range server.DependenciesCommand {
 			cmd := exec.Command(command[0], command[1:]...)
 			cmd.Dir = "webservers/" + key + "/"
-			cmd.Stdout = io.Discard //io.Discard
+			cmd.Stdout = io.Discard
 			cmd.Stderr = os.Stderr
 			err := cmd.Run()
 			if err != nil {
