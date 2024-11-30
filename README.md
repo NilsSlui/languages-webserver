@@ -70,8 +70,6 @@ ruby: avg 0.006387 seconds
 python: avg 0.009086 seconds 
 [██████████████████████████████████████████████████]
 
-Overall Average Batch Time: 0.004539 seconds
-sluiter@nils-mba languages-webserver % 
-
+Overall Average Batch Time: 0.004539 secondsg
 ```
 
