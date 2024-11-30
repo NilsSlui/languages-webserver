@@ -52,20 +52,17 @@ This project benchmarks a simple webserver implemented in multiple languages, me
 
 ## Results
 ```
-$ go run benchmark.go
-Running benchmark on php server...
-Running benchmark on go server...
-Running benchmark on python server...
-
 🎉🏆 GO #1 Benchmark Winner 🏆🎉
 Benchmark Results:
-go: avg time = 0.001537 seconds 
-[█████████]
-php: avg time = 0.002704 seconds 
+go: avg time = 0.001743 seconds 
+[██████████]
+php: avg time = 0.002708 seconds 
 [████████████████]
-python: avg time = 0.007966 seconds 
+node: avg time = 0.004474 seconds 
+[███████████████████████████]
+python: avg time = 0.008137 seconds 
 [██████████████████████████████████████████████████]
 
-Overall Average Batch Time: 0.004069 seconds
+Overall Average Batch Time: 0.004265 seconds
 ```
 
