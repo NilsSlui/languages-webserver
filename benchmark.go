@@ -26,14 +26,28 @@ type Benchmark struct {
 }
 
 var SERVERS = map[string]Server{
+	"rust": {
+		DependenciesCommand: [][]string{
+			{"rustc", "webserver.rs", "-o", "webserver"},
+		},
+		Command: []string{"./webserver"},
+	},
+	"ruby": {
+		Command: []string{"ruby", "webserver.rb"},
+	},
+	"node": {
+		DependenciesCommand: [][]string{
+			{"npm", "init", "-y"},
+			{"npm", "install"},
+		},
+		Command: []string{"node", "webserver.js"},
+	},
 	"php": {
 		Command: []string{
 			"php",
-			"-d", "opcache.enable_cli=1",
 			"-S", "127.0.0.1:8008",
-			"webservers/php/webserver.php",
+			"webserver.php",
 		},
-		Cwd: "",
 	},
 	"go": {
 		DependenciesCommand: [][]string{
@@ -41,31 +55,18 @@ var SERVERS = map[string]Server{
 			{"go", "build", "-o", "webserver", "webserver.go"},
 		},
 		Command: []string{"./webserver"},
-		Cwd:     "webservers/go",
 	},
 	"python": {
 		Command: []string{"python3", "webserver.py"},
-		Cwd:     "webservers/python",
-	},
-	"node": {
-		DependenciesCommand: [][]string{
-			{"npm", "init", "-y"}, // Initialize package.json
-			{"npm", "install"},    // Install dependencies
-		},
-		Command: []string{"node", "webserver.js"}, // Start the Node.js server
-		Cwd:     "webservers/node",                // Directory containing the Node.js files
 	},
 }
 
-func installDependencies(server Server) {
+func installDependencies(key string, server Server) {
 	if len(server.DependenciesCommand) > 0 {
-		cwd := server.Cwd
 		for _, command := range server.DependenciesCommand {
 			cmd := exec.Command(command[0], command[1:]...)
-			if cwd != "" {
-				cmd.Dir = cwd
-			}
-			cmd.Stdout = os.Stdout
+			cmd.Dir = "webservers/" + key + "/"
+			cmd.Stdout = io.Discard //io.Discard
 			cmd.Stderr = os.Stderr
 			err := cmd.Run()
 			if err != nil {
@@ -75,17 +76,17 @@ func installDependencies(server Server) {
 	}
 }
 
-func startServer(server Server) *exec.Cmd {
-	cwd := server.Cwd
+func startServer(key string, server Server) *exec.Cmd {
 	cmd := exec.Command(server.Command[0], server.Command[1:]...)
-	if cwd != "" {
-		cmd.Dir = cwd
-	}
+	cmd.Dir = "webservers/" + key + "/"
+	cmd.Stdout = io.Discard //os.Stderr
+	cmd.Stderr = io.Discard //os.Stderr
 	err := cmd.Start()
 	if err != nil {
 		fmt.Printf("Error starting server: %v\n", err)
 		return nil
 	}
+	// wait for server to start
 	time.Sleep(2 * time.Second)
 	return cmd
 }
@@ -126,7 +127,7 @@ func randomString(n int) string {
 	return string(b)
 }
 
-func runBenchmark(server Server, language string) float64 {
+func runBenchmark(name string, server Server) float64 {
 	var batchTimes []float64
 	batchSize := 16
 	requestsPerBatch := 8
@@ -150,7 +151,7 @@ func runBenchmark(server Server, language string) float64 {
 		return 0
 	}
 
-	if string(getResponse) != language {
+	if string(getResponse) != name {
 		fmt.Println("Server is not the correct language")
 		return 0
 	}
@@ -174,12 +175,12 @@ func runBenchmark(server Server, language string) float64 {
 		for i := 0; i < requestsPerBatch; i++ {
 			go func(route string, data url.Values) {
 				defer wg.Done()
-				rt, status := sendRequest(fmt.Sprintf("http://127.0.0.1:8008/%s", route), data)
+				time, status := sendRequest(fmt.Sprintf("http://127.0.0.1:8008/%s", route), data)
 				if status != 200 {
 					fmt.Printf("Request failed: %d\n", status)
 				}
 				mu.Lock()
-				runtimes = append(runtimes, rt)
+				runtimes = append(runtimes, time)
 				mu.Unlock()
 			}(routesBatch[i], dataBatch[i])
 		}
@@ -205,12 +206,17 @@ func runBenchmark(server Server, language string) float64 {
 func main() {
 	results := make(map[string]float64)
 
-	for serverName, server := range SERVERS {
-		fmt.Printf("Running benchmark on %s server...\n", serverName)
-		installDependencies(server)
-		serverProcess := startServer(server)
-		results[serverName] = runBenchmark(server, serverName)
-		stopServer(serverProcess)
+	for name, server := range SERVERS {
+		fmt.Printf("Running benchmark on %s server...\n", name)
+		installDependencies(name, server)
+		serverProcess := startServer(name, server)
+		if serverProcess == nil {
+			fmt.Printf("Failed to start %s server\n", name)
+			results[name] = 0
+		} else {
+			results[name] = runBenchmark(name, server)
+			stopServer(serverProcess)
+		}
 	}
 
 	benchmarks := make([]Benchmark, 0, len(results))
@@ -233,7 +239,7 @@ func main() {
 		barLength := int((benchmark.Value / maxValue) * 50)
 		bar := strings.Repeat("█", barLength)
 		color := getColor(benchmark.Value, maxValue)
-		fmt.Printf("%s%s%s: avg time = %f seconds \n[%s%s%s]\n",
+		fmt.Printf("%s%s%s: avg %f seconds \n[%s%s%s]\n",
 			color, benchmark.Name, resetColor(),
 			benchmark.Value,
 			color, bar, resetColor(),
